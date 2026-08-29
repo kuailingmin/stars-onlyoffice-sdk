@@ -989,7 +989,7 @@ eval("Asc.EditorConnector.prototype.callMethodAsync = function(name, args) { var
             lang: 'en',
             canCoAuthoring: true,
             customization: {
-                about: true,
+                about: false,
                 feedback: false
             }
         }
