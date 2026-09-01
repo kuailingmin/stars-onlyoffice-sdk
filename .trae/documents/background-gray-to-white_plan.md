@@ -286,9 +286,9 @@ FILES = [
 REPLACEMENTS_ORDERED = [
     # ================ Phase A1: 背景类灰色 → 白色（不触碰选中专用） =================
     # 工具栏/面板
-    ('--background-toolbar:#f7f7f7',                     '--background-toolbar:#ffffff'),
+    ('--background-toolbar:#fff',                     '--background-toolbar:#ffffff'),
     ('--background-toolbar-additional:#efefef',          '--background-toolbar-additional:#ffffff'),
-    ('--background-pane:#f7f7f7',                        '--background-pane:#ffffff'),
+    ('--background-pane:#fff',                        '--background-pane:#ffffff'),
     ('--background-pane-additional:#efefef',             '--background-pane-additional:#ffffff'),
     # canvas 外围/边框/标尺
     ('--canvas-background:#eee',                         '--canvas-background:#ffffff'),
