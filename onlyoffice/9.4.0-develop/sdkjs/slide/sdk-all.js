@@ -1,7 +1,7 @@
 /*
  * Copyright (C) Ascensio System SIA 2009-2026. All rights reserved
  *
- * 
+ * https://www.onlyoffice.com/
  *
  * Version: 9.4.0 (build:129)
  */

@@ -590,7 +590,7 @@ this.frame.blur())};window.AscEmbed.initWorker=function(a){window.AscEmbed.worke
                 _config.editorConfig.targetApp = 'desktop';
                 // _config.editorConfig.canBackToFolder = false;
                 if (!_config.editorConfig.customization) _config.editorConfig.customization = {};
-                _config.editorConfig.customization.about = true;
+                _config.editorConfig.customization.about = false;
                 _config.editorConfig.customization.compactHeader = false;
             }
         })();
