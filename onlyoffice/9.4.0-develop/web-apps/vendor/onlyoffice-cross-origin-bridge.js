@@ -821,6 +821,60 @@
     window.__ONLYOFFICE_PRINT_FRAME_PATCHED__ = true;
   }
 
+  function applyReadOnlyUI(readOnly) {
+    try {
+      var toolbar = document.getElementById("toolbar");
+      var rightMenu = document.getElementById("right-menu");
+      var display = readOnly ? "none" : "";
+      if (toolbar) { toolbar.style.display = display; }
+      if (rightMenu) { rightMenu.style.display = display; }
+      var common = window.Common;
+      if (common && common.NotificationCenter && common.NotificationCenter.trigger) {
+        common.NotificationCenter.trigger("layout:changed", "toolbar");
+        common.NotificationCenter.trigger("layout:changed", "rightmenu");
+      }
+    } catch (error) {
+      /* best effort */
+    }
+  }
+
+  function installReadOnlyUIPatch() {
+    if (window.__ONLYOFFICE_READONLY_UI_PATCHED__) {
+      return;
+    }
+
+    function applyInitialReadOnlyUI() {
+      try {
+        var common = window.Common;
+        var controller = common && common.Controllers && common.Controllers.Main;
+        var isReadOnly = !(controller && controller.mode && controller.mode.isEdit);
+        applyReadOnlyUI(isReadOnly);
+      } catch (error) {
+        /* best effort */
+      }
+    }
+
+    function tryListen(attempt) {
+      try {
+        var common = window.Common;
+        var nc = common && common.NotificationCenter;
+        if (nc && typeof nc.on === "function") {
+          nc.on("document:ready", applyInitialReadOnlyUI);
+          applyInitialReadOnlyUI();
+          return;
+        }
+      } catch (error) {
+        /* best effort */
+      }
+      if (attempt > 0) {
+        window.setTimeout(function () { tryListen(attempt - 1); }, 100);
+      }
+    }
+
+    tryListen(50);
+    window.__ONLYOFFICE_READONLY_UI_PATCHED__ = true;
+  }
+
   function syncControllerReadOnly(readOnly) {
     try {
       var common = window.Common;
@@ -844,6 +898,7 @@
       ) {
         common.NotificationCenter.trigger("editing:disable", readOnly);
       }
+      applyReadOnlyUI(readOnly);
     } catch (error) {
       /* best effort */
     }
@@ -1887,4 +1942,5 @@
   installXhrProxy();
   installNamedDownloadPatch(100);
   installPrintFramePatch();
+  installReadOnlyUIPatch();
 })();
