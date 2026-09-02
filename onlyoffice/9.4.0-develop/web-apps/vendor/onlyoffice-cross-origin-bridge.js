@@ -7,6 +7,8 @@
     EDITOR_RESPONSE: "editor:response",
     EDITOR_EVENT: "editor:event",
     EDITOR_SET_READONLY: "editor:set-readonly",
+    EDITOR_SET_TOOLBAR_VISIBLE: "editor:set-toolbar-visible",
+    EDITOR_SET_RIGHT_MENU_VISIBLE: "editor:set-right-menu-visible",
   };
   var EDITOR_COMMAND = {
     EDITOR_SUBSCRIBE: "editor:subscribe",
@@ -838,6 +840,32 @@
     }
   }
 
+  function applyToolbarVisible(visible) {
+    try {
+      var toolbar = document.getElementById("toolbar");
+      if (toolbar) { toolbar.style.display = visible ? "" : "none"; }
+      var common = window.Common;
+      if (common && common.NotificationCenter && common.NotificationCenter.trigger) {
+        common.NotificationCenter.trigger("layout:changed", "toolbar");
+      }
+    } catch (error) {
+      /* best effort */
+    }
+  }
+
+  function applyRightMenuVisible(visible) {
+    try {
+      var rightMenu = document.getElementById("right-menu");
+      if (rightMenu) { rightMenu.style.display = visible ? "" : "none"; }
+      var common = window.Common;
+      if (common && common.NotificationCenter && common.NotificationCenter.trigger) {
+        common.NotificationCenter.trigger("layout:changed", "rightmenu");
+      }
+    } catch (error) {
+      /* best effort */
+    }
+  }
+
   function installReadOnlyUIPatch() {
     if (window.__ONLYOFFICE_READONLY_UI_PATCHED__) {
       return;
@@ -936,6 +964,28 @@
     }
     window.setTimeout(function () {
       scheduleReadOnly(readOnly, retries - 1);
+    }, 50);
+  }
+
+  function scheduleToolbarVisible(visible, retries) {
+    var toolbar = document.getElementById("toolbar");
+    if ((toolbar && window.Common) || retries <= 0) {
+      applyToolbarVisible(visible);
+      return;
+    }
+    window.setTimeout(function () {
+      scheduleToolbarVisible(visible, retries - 1);
+    }, 50);
+  }
+
+  function scheduleRightMenuVisible(visible, retries) {
+    var rightMenu = document.getElementById("right-menu");
+    if ((rightMenu && window.Common) || retries <= 0) {
+      applyRightMenuVisible(visible);
+      return;
+    }
+    window.setTimeout(function () {
+      scheduleRightMenuVisible(visible, retries - 1);
     }, 50);
   }
 
@@ -1916,6 +1966,16 @@
 
     if (message.type === BRIDGE_MESSAGE.EDITOR_SET_READONLY) {
       scheduleReadOnly(!!message.readOnly, 20);
+      return;
+    }
+
+    if (message.type === BRIDGE_MESSAGE.EDITOR_SET_TOOLBAR_VISIBLE) {
+      scheduleToolbarVisible(!!message.visible, 20);
+      return;
+    }
+
+    if (message.type === BRIDGE_MESSAGE.EDITOR_SET_RIGHT_MENU_VISIBLE) {
+      scheduleRightMenuVisible(!!message.visible, 20);
       return;
     }
 
